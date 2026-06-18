@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Configured natively for Next.js 16 Turbopack matching the 2026 specifications
+  turbopack: {
+    root: process.cwd(),
+  },
 };
 
 export default nextConfig;
