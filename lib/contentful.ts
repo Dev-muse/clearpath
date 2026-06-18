@@ -91,3 +91,54 @@ export async function getSiteSettings(): Promise<ContentfulSiteSettings> {
     lender_count: raw.lenderCount
   };
 }
+
+export interface ContentfulHeroSection {
+  headline: string;
+  subheadline: string;
+  cta_text: string;
+  cta_url: string;
+  image_url: string | null;
+}
+
+export async function getHeroSection(): Promise<ContentfulHeroSection> {
+  const query = `
+    query {
+      heroSectionCollection(limit: 1) {
+        items {
+          headline
+          subheadline
+          ctaText
+          ctaUrl
+          image {
+            url
+          }
+        }
+      }
+    }
+  `;
+
+  interface GraphQLHeroSection {
+    headline: string;
+    subheadline: string;
+    ctaText: string;
+    ctaUrl: string;
+    image?: {
+      url: string;
+    };
+  }
+
+  const data = await fetchContentful<{ heroSectionCollection: { items: GraphQLHeroSection[] } }>(query);
+  const raw = data.heroSectionCollection.items[0];
+
+  if (!raw) {
+    throw new Error("No HeroSection entry found in Contentful space.");
+  }
+
+  return {
+    headline: raw.headline,
+    subheadline: raw.subheadline,
+    cta_text: raw.ctaText,
+    cta_url: raw.ctaUrl,
+    image_url: raw.image?.url || null,
+  };
+}
