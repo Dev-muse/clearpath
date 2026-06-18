@@ -42,20 +42,52 @@ export async function getSiteSettings(): Promise<ContentfulSiteSettings> {
     query {
       siteSettingsCollection(limit: 1) {
         items {
-          company_name
+          companyName
           tagline
           phone
           email
           address
-          fca_number
-          google_review_count
-          cases_completed
-          years_experience
-          lender_count
+          fcaNumber
+          googleReviewCount
+          casesCompleted
+          yearsExperience
+          lenderCount
         }
       }
     }
   `;
-  const data = await fetchContentful<{ siteSettingsCollection: { items: ContentfulSiteSettings[] } }>(query);
-  return data.siteSettingsCollection.items[0];
+  
+  interface GraphQLSiteSettings {
+    companyName: string;
+    tagline: string;
+    phone: string;
+    email: string;
+    address: string;
+    fcaNumber: string;
+    googleReviewCount: number;
+    casesCompleted: number;
+    yearsExperience: number;
+    lenderCount: number;
+  }
+
+  const data = await fetchContentful<{ siteSettingsCollection: { items: GraphQLSiteSettings[] } }>(query);
+  const raw = data.siteSettingsCollection.items[0];
+
+  if (!raw) {
+    throw new Error("No SiteSettings entry found in Contentful space.");
+  }
+
+  // Safely map the API camelCase variables directly back onto our application types
+  return {
+    company_name: raw.companyName,
+    tagline: raw.tagline,
+    phone: raw.phone,
+    email: raw.email,
+    address: raw.address,
+    fca_number: raw.fcaNumber,
+    google_review_count: raw.googleReviewCount,
+    cases_completed: raw.casesCompleted,
+    years_experience: raw.yearsExperience,
+    lender_count: raw.lenderCount
+  };
 }
