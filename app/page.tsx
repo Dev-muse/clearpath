@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSiteSettings, getHomePageData } from "@/lib/contentful";
 import Trustbar from "@/components/Trustbar";
+import MortgageCalculator from "@/components/MortgageCalculator";
 
 export default async function HomePage() {
   const [settings, pageData] = await Promise.all([
@@ -15,7 +16,6 @@ export default async function HomePage() {
 
   const { hero, services, process_steps, testimonials } = pageData;
 
-  // Fallbacks if Contentful fields are empty
   const headline = hero?.headline || "Expert Mortgage Advice for Your London Life";
   const subheadline = hero?.subheadline || "Tailored lending solutions for first-time buyers and seasoned investors, designed with institutional precision and personal care.";
   const ctaText = hero?.cta_text || "Book Free Consultation";
@@ -118,45 +118,85 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Process Pathway Section */}
+      {/* Process Pathway & Eligibility Form Section */}
       <section className="py-20 bg-navy-100 border-y border-brand-border">
         <div className="max-w-[1280px] mx-auto px-6 md:px-16">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs uppercase font-heading tracking-widest text-gold-500 font-bold block mb-2">
-              Timeline Strategy
-            </span>
-            <h2 className="font-heading text-3xl md:text-4xl text-navy-900 font-bold">
-              The Path to Completion
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative">
-            {process_steps.map((step, idx) => (
-              <div key={idx} className="relative flex flex-col items-start bg-white p-8 rounded-xl border border-brand-border">
-                <div className="absolute top-6 right-8 font-heading text-5xl font-bold text-navy-900/5 select-none">
-                  0{step.step_number}
-                </div>
-                <div className="w-12 h-12 rounded-full bg-gold-500 text-white flex items-center justify-center mb-6 shadow-md">
-                  <span className="material-symbols-outlined text-xl">{step.icon}</span>
-                </div>
-                <h3 className="font-heading text-xl font-bold text-navy-900 mb-3">
-                  {step.title}
-                </h3>
-                <p className="font-body text-sm text-brand-muted leading-relaxed">
-                  {step.description}
-                </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            
+            {/* Left Hand: Timeline Steps */}
+            <div className="lg:col-span-7">
+              <span className="text-xs uppercase font-heading tracking-widest text-gold-500 font-bold block mb-2">
+                Timeline Strategy
+              </span>
+              <h2 className="font-heading text-3xl md:text-4xl text-navy-900 font-bold mb-12 leading-tight">
+                The Modern Path to Completion
+              </h2>
+              
+              <div className="space-y-10">
+                {process_steps.map((step, idx) => (
+                  <div key={idx} className="flex gap-6 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-navy-900 text-white flex items-center justify-center font-heading font-bold text-sm">
+                      {step.step_number}
+                    </div>
+                    <div>
+                      <h4 className="font-heading text-lg font-bold text-navy-900 mb-1.5">
+                        {step.title}
+                      </h4>
+                      <p className="font-body text-sm text-brand-muted leading-relaxed max-w-xl">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Right Hand: Lead Eligibility Intake Form */}
+            <div className="lg:col-span-5 relative">
+              <div className="bg-white p-8 rounded-2xl shadow-xl border border-brand-border relative z-10">
+                <h3 className="font-heading text-xl font-bold text-navy-900 mb-6">
+                  Get Your Pre-Approval
+                </h3>
+                <form className="space-y-5 font-body text-sm">
+                  <div>
+                    <label className="block text-xs font-semibold text-brand-text/70 mb-2">What&apos;s your primary goal?</label>
+                    <select className="w-full p-3.5 rounded-lg border border-brand-border bg-brand-bg text-brand-text focus:outline-none focus:border-navy-900">
+                      <option>Buying my first home</option>
+                      <option>Remortgaging my property</option>
+                      <option>Property investment</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-brand-text/70 mb-2">Property Value (£)</label>
+                      <input type="number" placeholder="e.g. 500,000" className="w-full p-3.5 rounded-lg border border-brand-border text-brand-text focus:outline-none focus:border-navy-900" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-brand-text/70 mb-2">Deposit Amount (£)</label>
+                      <input type="number" placeholder="e.g. 50,000" className="w-full p-3.5 rounded-lg border border-brand-border text-brand-text focus:outline-none focus:border-navy-900" />
+                    </div>
+                  </div>
+                  <button type="button" className="w-full py-4 bg-navy-900 text-white font-semibold rounded-lg hover:bg-navy-900/90 active:scale-[0.99] transition-all">
+                    Check Eligibility
+                  </button>
+                </form>
+              </div>
+              <div className="absolute -top-4 -right-4 w-full h-full bg-gold-500/10 rounded-2xl -z-0" />
+            </div>
+
           </div>
         </div>
       </section>
 
+      {/* Interactive Mortgage Calculator Client-Side Boundary Component */}
+      <MortgageCalculator />
+
       {/* Testimonials Block Section */}
       <section className="py-20 bg-brand-bg">
-        <div className="max-w-7xl mx-auto px-6 md:px-16">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-16">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="font-heading text-3xl md:text-4xl text-navy-900 font-bold mb-4">
-              Client Experiences
+              Clients We&apos;ve Guided Home
             </h2>
             <p className="font-body text-brand-muted leading-relaxed">
               Read how we assist clients across competitive capital market sectors.
@@ -189,6 +229,30 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Final Conversion CTA Section */}
+      <section className="py-20 bg-brand-bg px-6">
+        <div className="max-w-[1280px] mx-auto bg-navy-100 rounded-[2.5rem] p-10 md:p-16 text-center relative overflow-hidden border border-brand-border">
+          <div className="relative z-10 max-w-xl mx-auto">
+            <h2 className="font-heading text-3xl md:text-4xl text-navy-900 font-bold mb-6">
+              Ready to find your mortgage?
+            </h2>
+            <p className="font-body text-base text-brand-muted mb-10 leading-relaxed">
+              Join over 500 Londoners who have found their home through our expert guidance. Start your journey with a no-obligation call today.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 font-body text-sm font-semibold">
+              <Link href="/contact" className="px-10 py-4 bg-navy-900 text-white rounded-xl hover:bg-navy-900/90 shadow-lg hover:scale-105 transition-all text-center">
+                Book a Call
+              </Link>
+              <Link href="/#calculator" className="px-10 py-4 border border-brand-muted/40 text-navy-900 rounded-xl hover:bg-navy-900/5 transition-all text-center">
+                Check Rates
+              </Link>
+            </div>
+          </div>
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-navy-900/5 rounded-full blur-3xl" />
         </div>
       </section>
     </>
