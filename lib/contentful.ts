@@ -1,13 +1,18 @@
 import { 
   ContentfulSiteSettings, 
-  ContentfulPage, 
+  ContentfulHeroSection,
   ContentfulServiceCard, 
-  ContentfulTestimonial,
   ContentfulProcessStep,
-  ContentfulTimelineMilestone,
-  ContentfulFaqItem,
-  ContentfulTeamMember
+  ContentfulTestimonial
 } from "@/types/contentful";
+
+// Page response aggregation container
+export interface HomePagePayload {
+  hero: ContentfulHeroSection | null;
+  services: ContentfulServiceCard[];
+  process_steps: ContentfulProcessStep[];
+  testimonials: ContentfulTestimonial[];
+}
 
 const SPACE_ID = process.env.CONTENTFUL_SPACE_ID;
 const ACCESS_TOKEN = process.env.CONTENTFUL_ACCESS_TOKEN;
@@ -42,42 +47,23 @@ export async function getSiteSettings(): Promise<ContentfulSiteSettings> {
     query {
       siteSettingsCollection(limit: 1) {
         items {
-          companyName
-          tagline
-          phone
-          email
-          address
-          fcaNumber
-          googleReviewCount
-          casesCompleted
-          yearsExperience
-          lenderCount
+          companyName tagline phone email address fcaNumber
+          googleReviewCount casesCompleted yearsExperience lenderCount
         }
       }
     }
   `;
   
   interface GraphQLSiteSettings {
-    companyName: string;
-    tagline: string;
-    phone: string;
-    email: string;
-    address: string;
-    fcaNumber: string;
-    googleReviewCount: number;
-    casesCompleted: number;
-    yearsExperience: number;
-    lenderCount: number;
+    companyName: string; tagline: string; phone: string; email: string; address: string; fcaNumber: string;
+    googleReviewCount: number; casesCompleted: number; yearsExperience: number; lenderCount: number;
   }
 
   const data = await fetchContentful<{ siteSettingsCollection: { items: GraphQLSiteSettings[] } }>(query);
   const raw = data.siteSettingsCollection.items[0];
 
-  if (!raw) {
-    throw new Error("No SiteSettings entry found in Contentful space.");
-  }
+  if (!raw) throw new Error("No SiteSettings entry found in Contentful space.");
 
-  // Safely map the API camelCase variables directly back onto our application types
   return {
     company_name: raw.companyName,
     tagline: raw.tagline,
@@ -92,53 +78,81 @@ export async function getSiteSettings(): Promise<ContentfulSiteSettings> {
   };
 }
 
-export interface ContentfulHeroSection {
-  headline: string;
-  subheadline: string;
-  cta_text: string;
-  cta_url: string;
-  image_url: string | null;
-}
-
-export async function getHeroSection(): Promise<ContentfulHeroSection> {
+export async function getHomePageData(): Promise<HomePagePayload> {
   const query = `
     query {
       heroSectionCollection(limit: 1) {
         items {
-          headline
-          subheadline
-          ctaText
-          ctaUrl
-          image {
-            url
-          }
+          headline subheadline ctaText ctaUrl
+          image { url }
+        }
+      }
+      serviceCardCollection(order: title_ASC) {
+        items {
+          title description icon ctaText ctaUrl
+        }
+      }
+      processStepCollection(order: stepNumber_ASC) {
+        items {
+          stepNumber title description icon
+        }
+      }
+      testimonialCollection {
+        items {
+          quote authorName area mortgageType starRating
         }
       }
     }
   `;
 
-  interface GraphQLHeroSection {
-    headline: string;
-    subheadline: string;
-    ctaText: string;
-    ctaUrl: string;
-    image?: {
-      url: string;
+  interface GraphQLHomeResponse {
+    heroSectionCollection: {
+      items: Array<{ headline: string; subheadline: string; ctaText: string; ctaUrl: string; image?: { url: string } }>;
+    };
+    serviceCardCollection: {
+      items: Array<{ title: string; description: string; icon: string; ctaText: string; ctaUrl: string }>;
+    };
+    processStepCollection: {
+      items: Array<{ stepNumber: number; title: string; description: string; icon: string }>;
+    };
+    testimonialCollection: {
+      items: Array<{ quote: string; authorName: string; area: string; mortgageType: string; starRating: number }>;
     };
   }
 
-  const data = await fetchContentful<{ heroSectionCollection: { items: GraphQLHeroSection[] } }>(query);
-  const raw = data.heroSectionCollection.items[0];
-
-  if (!raw) {
-    throw new Error("No HeroSection entry found in Contentful space.");
-  }
+  const data = await fetchContentful<GraphQLHomeResponse>(query);
+  const rawHero = data.heroSectionCollection.items[0];
 
   return {
-    headline: raw.headline,
-    subheadline: raw.subheadline,
-    cta_text: raw.ctaText,
-    cta_url: raw.ctaUrl,
-    image_url: raw.image?.url || null,
+    hero: rawHero ? {
+      headline: rawHero.headline,
+      subheadline: rawHero.subheadline,
+      cta_text: rawHero.ctaText,
+      cta_url: rawHero.ctaUrl,
+      image_url: rawHero.image?.url || null
+    } : null,
+
+    services: data.serviceCardCollection.items.map(item => ({
+      title: item.title,
+      description: item.description,
+      icon: item.icon,
+      cta_text: item.ctaText,
+      cta_url: item.ctaUrl
+    })),
+
+    process_steps: data.processStepCollection.items.map(item => ({
+      step_number: item.stepNumber,
+      title: item.title,
+      description: item.description,
+      icon: item.icon
+    })),
+
+    testimonials: data.testimonialCollection.items.map(item => ({
+      quote: item.quote,
+      author_name: item.authorName,
+      area: item.area,
+      mortgage_type: item.mortgageType,
+      star_rating: item.starRating
+    }))
   };
 }

@@ -27,6 +27,14 @@ export interface ContentfulSiteSettings {
   lender_count: number;
 }
 
+export interface ContentfulHeroSection {
+  headline: string;
+  subheadline: string;
+  cta_text: string;
+  cta_url: string;
+  image_url: string | null;
+}
+
 export interface ContentfulServiceCard {
   title: string;
   description: string;
