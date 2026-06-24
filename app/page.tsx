@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSiteSettings, getHomePageData } from "@/lib/contentful";
 import Trustbar from "@/components/Trustbar";
 import MortgageCalculator from "@/components/MortgageCalculator";
+import EligibilityForm from "@/components/EligibilityForm";
 
 export default async function HomePage() {
   const [settings, pageData] = await Promise.all([
@@ -10,14 +11,17 @@ export default async function HomePage() {
       hero: null,
       services: [],
       process_steps: [],
-      testimonials: []
+      testimonials: [],
     })),
   ]);
 
   const { hero, services, process_steps, testimonials } = pageData;
 
-  const headline = hero?.headline || "Expert Mortgage Advice for Your London Life";
-  const subheadline = hero?.subheadline || "Tailored lending solutions for first-time buyers and seasoned investors, designed with institutional precision and personal care.";
+  const headline =
+    hero?.headline || "Expert Mortgage Advice for Your London Life";
+  const subheadline =
+    hero?.subheadline ||
+    "Tailored lending solutions for first-time buyers and seasoned investors, designed with institutional precision and personal care.";
   const ctaText = hero?.cta_text || "Book Free Consultation";
   const ctaUrl = hero?.cta_url || "/contact";
   const heroImage = hero?.image_url;
@@ -62,7 +66,10 @@ export default async function HomePage() {
                 className="px-8 py-4 border border-brand-muted/40 text-navy-900 rounded-lg hover:bg-navy-900/5 transition-all flex items-center justify-center gap-2"
               >
                 View Today&apos;s Rates
-                <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "18px" }}
+                >
                   trending_down
                 </span>
               </Link>
@@ -82,19 +89,22 @@ export default async function HomePage() {
               Our Lending Specialisms
             </h2>
             <p className="font-body text-brand-muted leading-relaxed">
-              Whole-of-market options mapped across specialized criteria portfolios.
+              Whole-of-market options mapped across specialized criteria
+              portfolios.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="bg-white p-8 rounded-xl border border-brand-border shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="w-12 h-12 rounded-lg bg-navy-100 flex items-center justify-center text-gold-500 mb-6">
-                    <span className="material-symbols-outlined text-2xl">{service.icon}</span>
+                    <span className="material-symbols-outlined text-2xl">
+                      {service.icon}
+                    </span>
                   </div>
                   <h3 className="font-heading text-xl font-bold text-navy-900 mb-3">
                     {service.title}
@@ -103,7 +113,7 @@ export default async function HomePage() {
                     {service.description}
                   </p>
                 </div>
-                <Link 
+                <Link
                   href={service.cta_url}
                   className="font-body text-sm font-semibold text-navy-900 hover:text-gold-600 inline-flex items-center gap-1 transition-colors mt-auto group"
                 >
@@ -122,7 +132,6 @@ export default async function HomePage() {
       <section className="py-20 bg-navy-100 border-y border-brand-border">
         <div className="max-w-[1280px] mx-auto px-6 md:px-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-            
             {/* Left Hand: Timeline Steps */}
             <div className="lg:col-span-7">
               <span className="text-xs uppercase font-heading tracking-widest text-gold-500 font-bold block mb-2">
@@ -131,7 +140,7 @@ export default async function HomePage() {
               <h2 className="font-heading text-3xl md:text-4xl text-navy-900 font-bold mb-12 leading-tight">
                 The Modern Path to Completion
               </h2>
-              
+
               <div className="space-y-10">
                 {process_steps.map((step, idx) => (
                   <div key={idx} className="flex gap-6 items-start">
@@ -153,37 +162,9 @@ export default async function HomePage() {
 
             {/* Right Hand: Lead Eligibility Intake Form */}
             <div className="lg:col-span-5 relative">
-              <div className="bg-white p-8 rounded-2xl shadow-xl border border-brand-border relative z-10">
-                <h3 className="font-heading text-xl font-bold text-navy-900 mb-6">
-                  Get Your Pre-Approval
-                </h3>
-                <form className="space-y-5 font-body text-sm">
-                  <div>
-                    <label className="block text-xs font-semibold text-brand-text/70 mb-2">What&apos;s your primary goal?</label>
-                    <select className="w-full p-3.5 rounded-lg border border-brand-border bg-brand-bg text-brand-text focus:outline-none focus:border-navy-900">
-                      <option>Buying my first home</option>
-                      <option>Remortgaging my property</option>
-                      <option>Property investment</option>
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-brand-text/70 mb-2">Property Value (£)</label>
-                      <input type="number" placeholder="e.g. 500,000" className="w-full p-3.5 rounded-lg border border-brand-border text-brand-text focus:outline-none focus:border-navy-900" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-brand-text/70 mb-2">Deposit Amount (£)</label>
-                      <input type="number" placeholder="e.g. 50,000" className="w-full p-3.5 rounded-lg border border-brand-border text-brand-text focus:outline-none focus:border-navy-900" />
-                    </div>
-                  </div>
-                  <button type="button" className="w-full py-4 bg-navy-900 text-white font-semibold rounded-lg hover:bg-navy-900/90 active:scale-[0.99] transition-all">
-                    Check Eligibility
-                  </button>
-                </form>
-              </div>
+              <EligibilityForm />
               <div className="absolute -top-4 -right-4 w-full h-full bg-gold-500/10 rounded-2xl -z-0" />
             </div>
-
           </div>
         </div>
       </section>
@@ -199,20 +180,30 @@ export default async function HomePage() {
               Clients We&apos;ve Guided Home
             </h2>
             <p className="font-body text-brand-muted leading-relaxed">
-              Read how we assist clients across competitive capital market sectors.
+              Read how we assist clients across competitive capital market
+              sectors.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((item, idx) => (
-              <div key={idx} className="bg-white p-8 rounded-xl border border-brand-border flex flex-col justify-between shadow-xs">
+              <div
+                key={idx}
+                className="bg-white p-8 rounded-xl border border-brand-border flex flex-col justify-between shadow-xs"
+              >
                 <div>
                   <div className="flex gap-1 text-gold-500 mb-6">
-                    {Array.from({ length: item.star_rating || 5 }).map((_, i) => (
-                      <span key={i} className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        star
-                      </span>
-                    ))}
+                    {Array.from({ length: item.star_rating || 5 }).map(
+                      (_, i) => (
+                        <span
+                          key={i}
+                          className="material-symbols-outlined text-sm"
+                          style={{ fontVariationSettings: "'FILL' 1" }}
+                        >
+                          star
+                        </span>
+                      ),
+                    )}
                   </div>
                   <p className="font-body text-base text-brand-text/90 italic leading-relaxed mb-6">
                     &ldquo;{item.quote}&rdquo;
@@ -240,13 +231,21 @@ export default async function HomePage() {
               Ready to find your mortgage?
             </h2>
             <p className="font-body text-base text-brand-muted mb-10 leading-relaxed">
-              Join over 500 Londoners who have found their home through our expert guidance. Start your journey with a no-obligation call today.
+              Join over 500 Londoners who have found their home through our
+              expert guidance. Start your journey with a no-obligation call
+              today.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 font-body text-sm font-semibold">
-              <Link href="/contact" className="px-10 py-4 bg-navy-900 text-white rounded-xl hover:bg-navy-900/90 shadow-lg hover:scale-105 transition-all text-center">
+              <Link
+                href="/contact"
+                className="px-10 py-4 bg-navy-900 text-white rounded-xl hover:bg-navy-900/90 shadow-lg hover:scale-105 transition-all text-center"
+              >
                 Book a Call
               </Link>
-              <Link href="/#calculator" className="px-10 py-4 border border-brand-muted/40 text-navy-900 rounded-xl hover:bg-navy-900/5 transition-all text-center">
+              <Link
+                href="/#calculator"
+                className="px-10 py-4 border border-brand-muted/40 text-navy-900 rounded-xl hover:bg-navy-900/5 transition-all text-center"
+              >
                 Check Rates
               </Link>
             </div>
