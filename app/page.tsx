@@ -114,7 +114,7 @@ export default async function HomePage() {
                   </p>
                 </div>
                 <Link
-                  href={service.cta_url}
+                  href={`/services/${service.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                   className="font-body text-sm font-semibold text-navy-900 hover:text-gold-600 inline-flex items-center gap-1 transition-colors mt-auto group"
                 >
                   {service.cta_text}
