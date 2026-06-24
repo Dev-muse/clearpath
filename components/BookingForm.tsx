@@ -11,7 +11,7 @@ const bookingSchema = z.object({
   phone: z.string().min(10, "Enter a valid phone number"),
   preferredDate: z.string().min(1, "Please select a preferred date"),
   timeSlot: z.enum(["morning", "afternoon"], {
-    errorMap: () => ({ message: "Please select a preferred time slot" }),
+    message: "Please select a preferred time slot",
   }),
   notes: z.string().optional(),
 });
